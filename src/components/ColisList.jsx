@@ -5,9 +5,9 @@ import ModifyModal from './ModifyModal';
 import DeleteColisModal from './DeleteColisModal';
 
 function formaterDate(dateValue) {
-  if (!dateValue) return 'N/A';
+  if (!dateValue) return he.notUpdated;
   const date = new Date(dateValue);
-  if (isNaN(date.getTime())) return 'N/A';
+  if (isNaN(date.getTime())) return he.notUpdated;
   return date.toLocaleDateString('he-IL', {
     day: '2-digit',
     month: '2-digit',
@@ -39,7 +39,7 @@ function ColisCard({ colis, onModifier, onSupprimer }) {
 
             <p className='mt-1 text-sm text-slate-400'>
               {he.updatedAt}
-              {formaterDate(colis.updatedAt)}
+              {formaterDate(colis.updatedAt || colis.dateModification)}
             </p>
           </div>
 

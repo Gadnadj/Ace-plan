@@ -3,6 +3,7 @@ import colisInitiaux from '../data/colis.json'
 import { CONFIG, cleColis } from '../config'
 import { he } from '../i18n/he'
 import { useDepartements } from '../context/DepartementsContext'
+import { parseEmplacement } from '../utils/emplacement'
 
 const API_URL = CONFIG.API_BASE_URL
 
@@ -10,8 +11,27 @@ function genererId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
+function normaliserUnColis(colis) {
+  const backendId = colis._id || colis.backendId || null
+  const id = colis.id || backendId || genererId()
+  const code = String(colis.code ?? colis.titre ?? '')
+  const emplacement =
+    colis.emplacement || colis.position || colis.zone || ''
+  const updatedAt = colis.updatedAt || colis.dateModification || colis.createdAt || null
+
+  return {
+    ...colis,
+    id,
+    backendId,
+    code,
+    emplacement,
+    updatedAt,
+    dateModification: updatedAt,
+  }
+}
+
 function normaliserColis(liste) {
-  return liste.map((c) => ({ ...c, id: c.id || genererId() }))
+  return liste.map(normaliserUnColis)
 }
 
 /** מעביר נתונים ישנים למחלקת ריהוט */
@@ -37,16 +57,7 @@ export function useColis() {
         const res = await fetch(`${API_URL}/api/colis/${actifId}`)
         if (res.ok) {
           const data = await res.json()
-          // Normaliser les données de l'API
-          const normalises = data.map(c => ({
-            id: c.id || c._id,
-            titre: c.titre,
-            zone: c.zone,
-            position: c.position || '',
-            description: c.description || '',
-            departementId: c.departementId,
-          }))
-          setColis(normalises)
+          setColis(normaliserColis(data))
         } else {
           throw new Error('Erreur API')
         }
@@ -77,29 +88,29 @@ export function useColis() {
   }, [actifId])
 
   const modifierEmplacement = useCallback(
-    async (id, nouvelleZone, nouvellePosition) => {
+    async (id, nouvelEmplacement) => {
       try {
-        const res = await fetch(`${API_URL}/api/colis/${id}`, {
+        const colisCible = colis.find((c) => c.id === id)
+        const idApi = colisCible?.backendId || id
+        const emplacementNettoye = nouvelEmplacement.trim()
+        const { zone, number } = parseEmplacement(emplacementNettoye)
+
+        const res = await fetch(`${API_URL}/api/colis/${idApi}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            zone: nouvelleZone.trim(),
-            position: nouvellePosition?.trim() || ''
-          })
+            zone: zone || emplacementNettoye,
+            position: emplacementNettoye,
+            description: number || '',
+          }),
         })
 
         if (res.ok) {
           const updated = await res.json()
-          const nouveauxColis = colis.map(c =>
+          const normalise = normaliserUnColis(updated)
+          const nouveauxColis = colis.map((c) =>
             c.id === id
-              ? {
-                id: updated.id || updated._id,
-                titre: updated.titre,
-                zone: updated.zone,
-                position: updated.position || '',
-                description: updated.description || '',
-                departementId: updated.departementId,
-              }
+              ? { ...c, ...normalise, emplacement: emplacementNettoye }
               : c
           )
           setColis(nouveauxColis)
@@ -112,19 +123,20 @@ export function useColis() {
         return { ok: false, erreur: 'error' }
       }
     },
-    [colis],
+    [colis]
   )
 
   const ajouterColis = useCallback(
-    async (titre, zone, position, description) => {
-      const titreNettoye = titre.trim()
-      const zoneNettoye = zone.trim()
-      const positionNettoye = position?.trim() || ''
+    async (code, emplacement) => {
+      const codeNettoye = code.trim()
+      const emplacementNettoye = emplacement.trim()
+      const { zone, number } = parseEmplacement(emplacementNettoye)
+      const zoneNettoye = zone || emplacementNettoye
 
-      if (!titreNettoye) {
+      if (!codeNettoye) {
         return { ok: false, erreur: he.locationCannotBeEmpty }
       }
-      if (!zoneNettoye) {
+      if (!emplacementNettoye) {
         return { ok: false, erreur: 'Zone requise' }
       }
 
@@ -134,24 +146,21 @@ export function useColis() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             departementId: actifId,
-            titre: titreNettoye,
+            titre: codeNettoye,
             zone: zoneNettoye,
-            position: positionNettoye,
-            description: description?.trim() || ''
-          })
+            position: emplacementNettoye,
+            description: number || '',
+          }),
         })
 
         if (res.ok) {
           const nouveauColis = await res.json()
           const normalise = {
-            id: nouveauColis.id || nouveauColis._id,
-            titre: nouveauColis.titre,
-            zone: nouveauColis.zone,
-            position: nouveauColis.position || '',
-            description: nouveauColis.description || '',
-            departementId: nouveauColis.departementId,
+            ...normaliserUnColis(nouveauColis),
+            code: codeNettoye,
+            emplacement: emplacementNettoye,
           }
-          setColis([...colis, normalise].sort((a, b) => a.titre.localeCompare(b.titre)))
+          setColis([...colis, normalise].sort((a, b) => a.code.localeCompare(b.code)))
           return { ok: true }
         } else {
           return { ok: false, erreur: 'error' }
@@ -161,13 +170,15 @@ export function useColis() {
         return { ok: false, erreur: 'error' }
       }
     },
-    [colis, actifId],
+    [colis, actifId]
   )
 
   const supprimerColis = useCallback(
     async (id) => {
       try {
-        const res = await fetch(`${API_URL}/api/colis/${id}`, {
+        const colisCible = colis.find((c) => c.id === id)
+        const idApi = colisCible?.backendId || id
+        const res = await fetch(`${API_URL}/api/colis/${idApi}`, {
           method: 'DELETE'
         })
 
@@ -182,7 +193,7 @@ export function useColis() {
         return { ok: false, erreur: 'error' }
       }
     },
-    [colis],
+    [colis]
   )
 
   const filtrerColis = useCallback(
@@ -191,13 +202,12 @@ export function useColis() {
       if (!terme) return colis
 
       return colis.filter((c) => {
-        const titre = c.titre.toUpperCase()
-        const zone = c.zone.toUpperCase()
-        const position = (c.position || '').toUpperCase()
-        return titre.includes(terme) || zone.includes(terme) || position.includes(terme)
+        const code = String(c.code || '').toUpperCase()
+        const emplacement = String(c.emplacement || '').toUpperCase()
+        return code.includes(terme) || emplacement.includes(terme)
       })
     },
-    [colis],
+    [colis]
   )
 
   return {

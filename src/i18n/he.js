@@ -46,6 +46,7 @@ export const he = {
   edit: 'עריכה',
   delete: 'מחיקה',
   updatedAt: 'עודכן ב-',
+  notUpdated: 'טרם עודכן',
   noPackages: 'אין חבילות רשומות',
   noPackagesFor: (code) => `לא נמצאה חבילה עבור «${code}»`,
   packagesShown: (count) =>

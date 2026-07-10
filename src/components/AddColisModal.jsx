@@ -7,9 +7,9 @@ export default function AddColisModal({ onClose, onSave }) {
   const [emplacement, setEmplacement] = useState('')
   const [erreur, setErreur] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const resultat = onSave(code, emplacement)
+    const resultat = await onSave(code, emplacement)
     if (resultat.ok) {
       onClose()
     } else {
