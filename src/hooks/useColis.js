@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import colisInitiaux from '../data/colis.json'
 import { CONFIG, cleColis } from '../config'
 import { he } from '../i18n/he'
 import { useDepartements } from '../context/DepartementsContext'
@@ -81,10 +80,10 @@ export function useColis() {
           try {
             setColis(normaliserColis(JSON.parse(stockes)))
           } catch {
-            setColis(actifId === 'meubles' ? normaliserColis(colisInitiaux) : [])
+            setColis([])
           }
         } else {
-          setColis(actifId === 'meubles' ? normaliserColis(colisInitiaux) : [])
+          setColis([])
         }
       } finally {
         setChargement(false)
