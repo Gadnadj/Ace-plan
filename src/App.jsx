@@ -8,6 +8,7 @@ import Header from './components/Header'
 import SearchBar from './components/SearchBar'
 import ColisList from './components/ColisList'
 import AddColisModal from './components/AddColisModal'
+import InstallPwaPrompt from './components/InstallPwaPrompt'
 
 function MainApp() {
   const { isGestion } = useAuth()
@@ -90,6 +91,7 @@ function MainApp() {
           onSave={ajouterColis}
         />
       )}
+      <InstallPwaPrompt />
     </div>
   )
 }
