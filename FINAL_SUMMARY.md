@@ -95,9 +95,9 @@ netlify deploy --prod
 
 ### 5. Connecter Frontend à Backend
 
-- Netlify Dashboard → Build & deploy → Environment
-- Ajouter: `VITE_API_URL = https://plan-backend.up.railway.app`
-- Redéployer
+-- Netlify Dashboard → Build & deploy → Environment
+-- Ajouter: `VITE_API_URL = https://ace-plan-production.up.railway.app`
+-- Redéployer
 
 ---
 
@@ -141,7 +141,7 @@ netlify deploy --prod
    ↓
 2. React charge depuis Netlify CDN
    ↓
-3. Frontend appelle l'API: https://plan-backend.up.railway.app/api/...
+3. Frontend appelle l'API: https://ace-plan-production.up.railway.app/api/...
    ↓
 4. Backend traite la requête et accède à MongoDB
    ↓

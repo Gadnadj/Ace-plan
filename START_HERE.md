@@ -76,14 +76,14 @@ git push -u origin main
 
 ### Étape 4: Connecter Frontend → Backend
 
-- Netlify: Build & deploy → Environment
-- Ajouter: VITE_API_URL = https://plan-backend.up.railway.app
-- Redéployer
+-- Netlify: Build & deploy → Environment
+-- Ajouter: VITE_API_URL = https://ace-plan-production.up.railway.app
+-- Redéployer
 
 ### Étape 5: ✨ C'est prêt!
 
 - Frontend: https://xxx.netlify.app
-- Backend: https://plan-backend.up.railway.app
+- Backend: https://ace-plan-production.up.railway.app
 - Database: MongoDB Atlas
 
 ---
@@ -95,7 +95,7 @@ Utilisateur
     ↓
 https://xxx.netlify.app (Frontend React)
     ↓
-API https://plan-backend.up.railway.app
+API https://ace-plan-production.up.railway.app
     ↓
 MongoDB Atlas (Database)
 ```

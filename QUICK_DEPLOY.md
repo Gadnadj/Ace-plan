@@ -52,21 +52,21 @@ git push -u origin main
 6. Cliquer "Deploy"
 7. Générer domaine public → copier l'URL
 
-**URL Backend**: `https://plan-backend.up.railway.app` (copier)
+**URL Backend**: `https://ace-plan-production.up.railway.app` (copier)
 
 ### Étape 5: Connecter Frontend à Backend
 
 1. Netlify Dashboard → **Site settings** → **Build & deploy** → **Environment**
 2. Ajouter variable:
    ```
-   VITE_API_URL=https://plan-backend.up.railway.app
+   VITE_API_URL=https://ace-plan-production.up.railway.app
    ```
 3. Cliquer **Trigger deploy** pour redéployer
 
 ### ✅ C'est prêt!
 
 - Frontend: `https://xxx.netlify.app`
-- Backend: `https://plan-backend.up.railway.app`
+- Backend: `https://ace-plan-production.up.railway.app`
 - Database: MongoDB Atlas
 
 ---
@@ -91,7 +91,7 @@ git push
 
 ```bash
 # Backend
-curl https://plan-backend.up.railway.app/api/departements
+curl https://ace-plan-production.up.railway.app/api/departements
 
 # Frontend - ouvrir dans le navigateur
 https://xxx.netlify.app

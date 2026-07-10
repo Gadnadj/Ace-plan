@@ -39,8 +39,7 @@
 ## Phase 5: Tests d'intégration
 
 ```bash
-# Test backend
-curl https://plan-backend.up.railway.app/api/departements
+curl https://ace-plan-production.up.railway.app/api/departements
 
 # Test frontend
 # - Ouvrir https://xxx.netlify.app

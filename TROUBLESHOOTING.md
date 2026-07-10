@@ -69,7 +69,7 @@ console.log(import.meta.env.VITE_API_URL)
 2. Vérifier que le backend est accessible:
 
 ```bash
-curl https://plan-backend.up.railway.app/api/departements
+curl https://ace-plan-production.up.railway.app/api/departements
 ```
 
 3. Vérifier les variables Netlify:

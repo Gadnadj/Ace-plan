@@ -65,7 +65,7 @@ netlify deploy --prod
 1. Dans Netlify Dashboard → **Site settings** → **Build & deploy** → **Environment**
 2. Ajouter:
    ```
-   VITE_API_URL = https://plan-backend.up.railway.app
+   VITE_API_URL = https://ace-plan-production.up.railway.app
    ```
 
 ---
@@ -100,7 +100,7 @@ NODE_ENV=production
 ### 4. Générer le domaine public
 
 Railway génère automatiquement une URL comme:
-`https://plan-backend.up.railway.app`
+`https://ace-plan-production.up.railway.app`
 
 Copier cette URL pour la prochaine étape.
 
@@ -125,7 +125,7 @@ Maintenant que le backend est déployé:
 
 ```bash
 # Remplacer par votre URL Railway
-curl https://plan-backend.up.railway.app/api/departements
+curl https://ace-plan-production.up.railway.app/api/departements
 ```
 
 Devrait retourner les départements en JSON.
@@ -234,5 +234,5 @@ netlify logs            # Frontend logs
 Une fois déployé, votre application sera accessible 24/7 avec:
 
 - Frontend sur `https://votre-app.netlify.app`
-- Backend sur `https://plan-backend.up.railway.app`
+- Backend sur `https://ace-plan-production.up.railway.app`
 - Database sur MongoDB Atlas
