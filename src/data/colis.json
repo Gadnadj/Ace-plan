@@ -1,0 +1,42 @@
+[
+  {
+    "code": "101",
+    "emplacement": "A-01",
+    "dateModification": "2026-07-08T14:30:00.000Z"
+  },
+  {
+    "code": "102",
+    "emplacement": "A-02",
+    "dateModification": "2026-07-09T09:15:00.000Z"
+  },
+  {
+    "code": "103",
+    "emplacement": "B-05",
+    "dateModification": "2026-07-10T08:00:00.000Z"
+  },
+  {
+    "code": "201",
+    "emplacement": "C-12",
+    "dateModification": "2026-07-07T16:45:00.000Z"
+  },
+  {
+    "code": "202",
+    "emplacement": "C-14",
+    "dateModification": "2026-07-09T11:20:00.000Z"
+  },
+  {
+    "code": "301",
+    "emplacement": "D-03",
+    "dateModification": "2026-07-06T10:00:00.000Z"
+  },
+  {
+    "code": "302",
+    "emplacement": "D-07",
+    "dateModification": "2026-07-10T07:30:00.000Z"
+  },
+  {
+    "code": "401",
+    "emplacement": "E-01",
+    "dateModification": "2026-07-05T13:00:00.000Z"
+  }
+]

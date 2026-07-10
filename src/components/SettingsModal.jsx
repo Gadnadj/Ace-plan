@@ -1,0 +1,254 @@
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useZones } from '../context/ZonesContext';
+import { useDepartements } from '../context/DepartementsContext';
+import { he } from '../i18n/he';
+
+export default function SettingsModal({ onClose }) {
+  const { isGestion } = useAuth();
+  const { zones, ajouterZone, supprimerZone } = useZones();
+  const { departements, ajouterDepartement, supprimerDepartement } =
+    useDepartements();
+
+  const [nouvelleZone, setNouvelleZone] = useState('');
+  const [erreurZone, setErreurZone] = useState('');
+  const [zoneASupprimer, setZoneASupprimer] = useState(null);
+
+  const [nouveauDept, setNouveauDept] = useState('');
+  const [erreurDept, setErreurDept] = useState('');
+  const [deptASupprimer, setDeptASupprimer] = useState(null);
+
+  const handleAjouterZone = (e) => {
+    e.preventDefault();
+    const resultat = ajouterZone(nouvelleZone);
+    if (resultat.ok) {
+      setNouvelleZone('');
+      setErreurZone('');
+    } else if (resultat.erreur === 'exists') {
+      setErreurZone(he.zoneExists);
+    } else {
+      setErreurZone(he.zoneEmpty);
+    }
+  };
+
+  const handleAjouterDept = (e) => {
+    e.preventDefault();
+    const resultat = ajouterDepartement(nouveauDept);
+    if (resultat.ok) {
+      setNouveauDept('');
+      setErreurDept('');
+    } else if (resultat.erreur === 'exists') {
+      setErreurDept(he.departmentExists);
+    } else {
+      setErreurDept(he.departmentEmpty);
+    }
+  };
+
+  return (
+    <div
+      className='fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center'
+      onClick={onClose}
+      role='dialog'
+      aria-modal='true'
+      aria-labelledby='settings-titre'
+    >
+      <div
+        className='flex max-h-[85svh] w-full max-w-lg flex-col rounded-t-3xl bg-white shadow-xl sm:max-h-[80svh] sm:rounded-3xl'
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className='border-b border-slate-200 p-6 pb-4'>
+          <h2 id='settings-titre' className='text-xl font-bold text-slate-800'>
+            {he.settingsTitle}
+          </h2>
+          <p className='mt-1 text-sm text-slate-500'>{he.settingsSubtitle}</p>
+        </div>
+
+        <div className='flex-1 overflow-y-auto p-6 pt-4'>
+          {/* מחלקות / pages */}
+          {isGestion && (
+            <section className='mb-8'>
+              <h3 className='mb-3 text-sm font-semibold text-slate-600'>
+                {he.departmentsList}
+              </h3>
+              <ul className='mb-4 flex flex-col gap-2'>
+                {departements.map((d) => (
+                  <li
+                    key={d.id}
+                    className='flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3'
+                  >
+                    <span className='font-semibold text-slate-800'>
+                      {d.nom}
+                    </span>
+                    {departements.length > 1 &&
+                      (deptASupprimer === d.id ? (
+                        <div className='flex gap-1'>
+                          <button
+                            type='button'
+                            onClick={() => setDeptASupprimer(null)}
+                            className='rounded-lg bg-slate-200 px-2 py-1 text-xs font-medium text-slate-600'
+                          >
+                            {he.cancel}
+                          </button>
+                          <button
+                            type='button'
+                            onClick={() => {
+                              supprimerDepartement(d.id);
+                              setDeptASupprimer(null);
+                            }}
+                            className='rounded-lg bg-red-500 px-2 py-1 text-xs font-medium text-white'
+                          >
+                            {he.confirm}
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type='button'
+                          onClick={() => setDeptASupprimer(d.id)}
+                          className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
+                        >
+                          ✕
+                        </button>
+                      ))}
+                  </li>
+                ))}
+              </ul>
+              <form onSubmit={handleAjouterDept}>
+                <label
+                  htmlFor='nouveau-dept'
+                  className='mb-2 block text-sm font-semibold text-slate-600'
+                >
+                  {he.addDepartment}
+                </label>
+                <div className='flex gap-2'>
+                  <input
+                    id='nouveau-dept'
+                    type='text'
+                    value={nouveauDept}
+                    onChange={(e) => {
+                      setNouveauDept(e.target.value);
+                      setErreurDept('');
+                    }}
+                    placeholder={he.newDepartmentPlaceholder}
+                    className='min-w-0 flex-1 rounded-2xl border-2 border-slate-200 px-4 py-3 text-base font-semibold text-slate-800 outline-none focus:border-amber-500'
+                  />
+                  <button
+                    type='submit'
+                    disabled={!nouveauDept.trim()}
+                    className='shrink-0 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-semibold text-white active:bg-amber-600 disabled:opacity-40'
+                  >
+                    {he.add}
+                  </button>
+                </div>
+                {erreurDept && (
+                  <p className='mt-2 text-sm text-red-600' role='alert'>
+                    {erreurDept}
+                  </p>
+                )}
+              </form>
+            </section>
+          )}
+
+          {/* אותיות אזור */}
+          <section>
+            <h3 className='mb-3 text-sm font-semibold text-slate-600'>
+              {he.zonesList}
+            </h3>
+
+            {zones.length === 0 ? (
+              <p className='py-6 text-center text-slate-400'>{he.noZones}</p>
+            ) : (
+              <ul className='mb-6 flex flex-wrap gap-2 ltr'>
+                {zones.map((z) => (
+                  <li
+                    key={z}
+                    className='flex items-center gap-2 rounded-2xl bg-slate-50 px-4 py-3'
+                  >
+                    <span className='text-xl font-bold text-slate-800'>
+                      {z}
+                    </span>
+                    {zoneASupprimer === z ? (
+                      <div className='flex gap-1'>
+                        <button
+                          type='button'
+                          onClick={() => setZoneASupprimer(null)}
+                          className='rounded-lg bg-slate-200 px-2 py-1 text-xs font-medium text-slate-600'
+                        >
+                          {he.cancel}
+                        </button>
+                        <button
+                          type='button'
+                          onClick={() => {
+                            supprimerZone(z);
+                            setZoneASupprimer(null);
+                          }}
+                          className='rounded-lg bg-red-500 px-2 py-1 text-xs font-medium text-white'
+                        >
+                          {he.confirm}
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type='button'
+                        onClick={() => setZoneASupprimer(z)}
+                        className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <form onSubmit={handleAjouterZone}>
+              <label
+                htmlFor='nouvelle-zone'
+                className='mb-2 block text-sm font-semibold text-slate-600'
+              >
+                {he.addZone}
+              </label>
+              <div className='flex gap-2'>
+                <input
+                  id='nouvelle-zone'
+                  type='text'
+                  maxLength={2}
+                  value={nouvelleZone}
+                  onChange={(e) => {
+                    setNouvelleZone(
+                      e.target.value.toUpperCase().replace(/[^A-Z]/g, ''),
+                    );
+                    setErreurZone('');
+                  }}
+                  placeholder={he.newZonePlaceholder}
+                  className='w-20 rounded-2xl border-2 border-slate-200 px-4 py-3 text-center text-xl font-bold text-slate-800 outline-none focus:border-amber-500'
+                />
+                <button
+                  type='submit'
+                  disabled={!nouvelleZone.trim()}
+                  className='flex-1 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-semibold text-white active:bg-amber-600 disabled:opacity-40'
+                >
+                  {he.add}
+                </button>
+              </div>
+              {erreurZone && (
+                <p className='mt-2 text-sm text-red-600' role='alert'>
+                  {erreurZone}
+                </p>
+              )}
+            </form>
+          </section>
+        </div>
+
+        <div className='border-t border-slate-200 p-4'>
+          <button
+            type='button'
+            onClick={onClose}
+            className='w-full rounded-2xl bg-slate-100 py-4 text-base font-semibold text-slate-600 active:bg-slate-200'
+          >
+            {he.close}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

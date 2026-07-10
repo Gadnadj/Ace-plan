@@ -1,0 +1,10 @@
+- generic [ref=e98]:
+  - button "← Retour" [ref=e114]:
+    - generic [ref=e115]: ←
+    - generic [ref=e116]: Retour
+  - heading "Accès Gestion" [level=1] [ref=e117]
+  - paragraph [ref=e118]: Entrez le code PIN logistique
+  - generic [ref=e119]:
+    - textbox "Code PIN" [active] [ref=e120]:
+      - /placeholder: ••••
+    - button "Valider" [disabled] [ref=e121]

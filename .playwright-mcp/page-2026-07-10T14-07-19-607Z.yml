@@ -1,0 +1,16 @@
+- generic [ref=e98]:
+  - generic [ref=e99]:
+    - generic [ref=e100]: 📦
+    - heading "Stock Meubles" [level=1] [ref=e101]
+    - paragraph [ref=e102]: Gestion de la réserve
+  - generic [ref=e103]:
+    - button "👁️ Consultation Vendeurs — Recherche et visualisation" [ref=e104]:
+      - generic [ref=e105]: 👁️
+      - generic [ref=e106]:
+        - paragraph [ref=e107]: Consultation
+        - paragraph [ref=e108]: Vendeurs — Recherche et visualisation
+    - button "🔧 Gestion Logistique — Modification des emplacements" [ref=e109]:
+      - generic [ref=e110]: 🔧
+      - generic [ref=e111]:
+        - paragraph [ref=e112]: Gestion
+        - paragraph [ref=e113]: Logistique — Modification des emplacements
