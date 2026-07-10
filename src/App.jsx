@@ -28,6 +28,11 @@ function MainApp() {
     setModalAjout(false)
   }, [actifId])
 
+  // איפוס חיפוש בעת מעבר בין מצבי הרשאה (consultation/gestion)
+  useEffect(() => {
+    setRecherche('')
+  }, [isGestion])
+
   // עדכון כותרת הדף
   useEffect(() => {
     document.title = departementActif
