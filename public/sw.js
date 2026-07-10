@@ -28,11 +28,17 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
+    // Never cache API calls - always fetch fresh
+    if (event.request.url.includes('/api/')) {
+        event.respondWith(fetch(event.request).catch(() => caches.match(OFFLINE_URL)));
+        return;
+    }
+
+    // Cache-first for assets (HTML, JS, CSS, images, etc.)
     event.respondWith(
         caches.match(event.request).then((cached) => {
             if (cached) return cached;
             return fetch(event.request).then((response) => {
-                // Optional: cache fetched assets for next time
                 if (!response || response.status !== 200 || response.type !== 'basic') {
                     return response;
                 }
