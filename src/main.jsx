@@ -9,18 +9,16 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 );
 
-// Service worker disabled for now (PWA setup, but cache conflict with API)
-// Re-enable after fixing cache strategy
-// if ('serviceWorker' in navigator) {
-//   window.addEventListener('load', () => {
-//     const swPath = '/sw.js';
-//     navigator.serviceWorker
-//       .register(swPath)
-//       .then((reg) => {
-//         console.log('Service worker registered:', reg.scope);
-//       })
-//       .catch((err) => {
-//         console.warn('Service worker registration failed:', err);
-//       });
-//   });
-// }
+// Register PWA service worker only in production builds.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => {
+        console.log('Service worker registered:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('Service worker registration failed:', err);
+      });
+  });
+}
