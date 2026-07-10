@@ -82,7 +82,7 @@ curl -X POST http://localhost:3001/api/colis \
 # Vérifier le PIN
 curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"pin": "1234"}'
+  -d '{"pin": "2122"}'
 
 # Produire en JSON formaté
 curl -s http://localhost:3001/api/departements | jq .

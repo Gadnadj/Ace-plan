@@ -85,30 +85,19 @@ netlify deploy --prod
 4. Sélectionner votre repo "plan"
 5. Sélectionner le dossier `backend`
 
-### 3. Ajouter MongoDB Atlas
+### 3. Ajouter les 3 variables d'environnement
 
-Dans Railway:
-
-1. Cliquer "Add" → "MongoDB"
-2. Railway créera une instance MongoDB gratuite
-
-**OU** utiliser votre MongoDB Atlas existant:
-
-1. Cliquer "Add" → "Environment Variable"
-2. Ajouter `MONGODB_URI` avec votre URI MongoDB Atlas
-
-### 4. Configurer les variables d'environnement
-
-Dans Railway Dashboard → Variables:
+**IMPORTANT - Railway Dashboard → Variables → Ajouter ces 3 lignes exactement:**
 
 ```
 MONGODB_URI=mongodb+srv://gnadjar:salbZtn4o1Fr5kwG@cluster0.lrm3nqe.mongodb.net/?appName=Cluster0
-PIN_GESTION=1234
-PORT=3000
+PIN_GESTION=2122
 NODE_ENV=production
 ```
 
-### 5. Générer le domaine public
+**Note**: Le PORT est attribué automatiquement par Railway, pas besoin de l'ajouter.
+
+### 4. Générer le domaine public
 
 Railway génère automatiquement une URL comme:
 `https://plan-backend.up.railway.app`
@@ -117,7 +106,7 @@ Copier cette URL pour la prochaine étape.
 
 ---
 
-## 🔗 Étape 4: Mettre à jour l'URL du Frontend
+## 🔗 Étape 5: Mettre à jour l'URL du Frontend
 
 Maintenant que le backend est déployé:
 

@@ -64,10 +64,14 @@ git push -u origin main
 1. Aller sur railway.app
 2. "New Project" → "Deploy from GitHub"
 3. Sélectionner repo plan
-4. Ajouter variables:
-   - MONGODB_URI (MongoDB Atlas)
-   - PIN_GESTION=1234
-   - NODE_ENV=production
+4. **Ajouter ces 3 variables d'environnement** (Build & deploy → Environment):
+
+   ```
+   MONGODB_URI=mongodb+srv://gnadjar:salbZtn4o1Fr5kwG@cluster0.lrm3nqe.mongodb.net/?appName=Cluster0
+   PIN_GESTION=2122
+   NODE_ENV=production
+   ```
+
 5. Railway détecte backend/ automatiquement
 
 ### Étape 4: Connecter Frontend → Backend

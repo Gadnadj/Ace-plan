@@ -2,7 +2,7 @@
  * הגדרות האפליקציה
  */
 export const CONFIG = {
-  PIN_GESTION: '1234',
+  PIN_GESTION: '2122',
   STORAGE_PREFIX: 'stock',
   DEPARTEMENTS_STORAGE_KEY: 'stock-departements',
   DEPARTEMENT_ACTIF_KEY: 'stock-departement-actif',

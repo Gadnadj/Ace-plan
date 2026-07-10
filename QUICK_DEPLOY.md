@@ -38,14 +38,19 @@ git push -u origin main
 1. Aller sur [railway.app](https://railway.app)
 2. Cliquer "New Project" → "Deploy from GitHub"
 3. Sélectionner le repo `plan`
-4. Railway détecte `backend/package.json`
-5. Ajouter variables d'env:
+4. Railway détecte `backend/package.json` automatiquement
+5. **Ajouter 3 variables d'environnement** (Build & deploy → Environment):
+
+   **IMPORTANT: Copier-coller exactement ceci:**
+
    ```
    MONGODB_URI=mongodb+srv://gnadjar:salbZtn4o1Fr5kwG@cluster0.lrm3nqe.mongodb.net/?appName=Cluster0
-   PIN_GESTION=1234
+   PIN_GESTION=2122
    NODE_ENV=production
    ```
-6. Générer domaine public → copier l'URL
+
+6. Cliquer "Deploy"
+7. Générer domaine public → copier l'URL
 
 **URL Backend**: `https://plan-backend.up.railway.app` (copier)
 
