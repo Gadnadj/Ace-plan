@@ -23,7 +23,7 @@ export default function LocationInput({ value, onChange, autoFocus = false }) {
   useEffect(() => {
     const p = parseEmplacement(value)
     if (p.zone) setZone(p.zone)
-    if (p.number) setNumber(p.number.replace(/^0+/, '') || p.number)
+    setNumber(p.number ? p.number.replace(/^0+/, '') || p.number : '')
   }, [value])
 
   useEffect(() => {

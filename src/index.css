@@ -38,8 +38,7 @@ textarea:disabled {
 .panel-3d {
   position: relative;
   border: 1px solid #e5e7eb;
-  transform: perspective(1400px) rotateX(1.2deg) translateZ(0);
-  transform-style: preserve-3d;
+  transform: translateZ(0);
   background-image: linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.95),
@@ -61,13 +60,12 @@ textarea:disabled {
   background: rgba(15, 23, 42, 0.14);
   filter: blur(9px);
   z-index: -1;
+  pointer-events: none;
 }
 
 .card-3d {
   position: relative;
-  transform: translateZ(0);
-  transform: perspective(900px) rotateX(2deg) translateY(-1px);
-  transform-style: preserve-3d;
+  transform: translateY(0) translateZ(0);
   transition: transform 180ms ease, box-shadow 180ms ease;
   box-shadow:
     0 2px 0 rgba(255, 255, 255, 0.96) inset,
@@ -77,7 +75,7 @@ textarea:disabled {
 }
 
 .card-3d:hover {
-  transform: perspective(900px) rotateX(3deg) translateY(-4px) scale(1.01);
+  transform: translateY(-2px) scale(1.005);
   box-shadow:
     0 2px 0 rgba(255, 255, 255, 0.96) inset,
     0 -1px 0 rgba(15, 23, 42, 0.05) inset,
@@ -100,7 +98,8 @@ textarea:disabled {
 
 .button-3d {
   position: relative;
-  transform: perspective(700px) rotateX(8deg) translateZ(0);
+  transform: translateY(0) translateZ(0);
+  backface-visibility: hidden;
   box-shadow:
     0 2px 0 rgba(255, 255, 255, 0.25) inset,
     0 -2px 0 rgba(0, 0, 0, 0.14) inset,
@@ -109,11 +108,11 @@ textarea:disabled {
 }
 
 .button-3d:hover {
-  transform: perspective(700px) rotateX(10deg) translateY(-1px);
+  transform: translateY(-1px);
 }
 
 .button-3d:active {
-  transform: perspective(700px) rotateX(4deg) translateY(2px);
+  transform: translateY(1px);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.2) inset,
     0 -1px 0 rgba(0, 0, 0, 0.12) inset,
