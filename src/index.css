@@ -98,21 +98,23 @@ textarea:disabled {
 
 .button-3d {
   position: relative;
-  transform: translateY(0) translateZ(0);
+  transform: none;
   backface-visibility: hidden;
+  pointer-events: auto;
+  touch-action: manipulation;
   box-shadow:
     0 2px 0 rgba(255, 255, 255, 0.25) inset,
     0 -2px 0 rgba(0, 0, 0, 0.14) inset,
     0 14px 20px rgba(127, 29, 29, 0.22);
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  transition: box-shadow 140ms ease, filter 140ms ease;
 }
 
 .button-3d:hover {
-  transform: translateY(-1px);
+  filter: brightness(1.02);
 }
 
 .button-3d:active {
-  transform: translateY(1px);
+  filter: brightness(0.98);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.2) inset,
     0 -1px 0 rgba(0, 0, 0, 0.12) inset,
