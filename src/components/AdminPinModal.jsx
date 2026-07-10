@@ -7,15 +7,21 @@ export default function AdminPinModal({ onClose }) {
   const [pin, setPin] = useState('')
   const [erreur, setErreur] = useState('')
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const tryLogin = (value) => {
     setErreur('')
-    if (loginGestion(pin)) {
+    if (loginGestion(value)) {
       setPin('')
       onClose()
-    } else {
-      setErreur(he.pinWrong)
-      setPin('')
+      return
+    }
+    setErreur(he.pinWrong)
+    setPin('')
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (pin.length === 4) {
+      tryLogin(pin)
     }
   }
 
@@ -41,9 +47,17 @@ export default function AdminPinModal({ onClose }) {
             type="password"
             inputMode="numeric"
             pattern="[0-9]*"
-            maxLength={6}
+            maxLength={4}
             value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+            onChange={(e) => {
+              const prochainPin = e.target.value.replace(/\D/g, '').slice(0, 4)
+              setPin(prochainPin)
+              if (prochainPin.length === 4) {
+                tryLogin(prochainPin)
+              } else {
+                setErreur('')
+              }
+            }}
             placeholder="••••"
             autoFocus
             dir="ltr"
@@ -67,7 +81,7 @@ export default function AdminPinModal({ onClose }) {
             </button>
             <button
               type="submit"
-              disabled={pin.length < 4}
+              disabled={pin.length !== 4}
               className="flex-1 rounded-2xl bg-amber-500 py-4 text-base font-semibold text-white active:bg-amber-600 disabled:opacity-40"
             >
               {he.confirm}

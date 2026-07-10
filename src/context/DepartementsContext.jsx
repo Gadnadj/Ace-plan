@@ -11,6 +11,24 @@ import { CONFIG } from '../config';
 const DepartementsContext = createContext(null);
 
 const API_URL = CONFIG.API_BASE_URL;
+const DEFAULT_DEPARTEMENT_ID = 'meubles';
+const DEFAULT_DEPARTEMENT_NAME = 'מלאי ריהוט';
+
+function choisirDepartementInitial(liste, actifStocke) {
+  const departementParDefaut = liste.find(
+    (d) => d.id === DEFAULT_DEPARTEMENT_ID || d.nom === DEFAULT_DEPARTEMENT_NAME,
+  );
+
+  if (departementParDefaut) {
+    return departementParDefaut.id;
+  }
+
+  if (actifStocke && liste.some((d) => d.id === actifStocke)) {
+    return actifStocke;
+  }
+
+  return liste[0]?.id || '';
+}
 
 export function DepartementsProvider({ children }) {
   const [departements, setDepartements] = useState([]);
@@ -28,11 +46,11 @@ export function DepartementsProvider({ children }) {
           setDepartements(deptsMappees);
 
           const actif = localStorage.getItem(CONFIG.DEPARTEMENT_ACTIF_KEY);
-          setActifId(
-            actif && deptsMappees.some((d) => d.id === actif)
-              ? actif
-              : deptsMappees[0]?.id || '',
-          );
+          const initialId = choisirDepartementInitial(deptsMappees, actif);
+          setActifId(initialId);
+          if (initialId) {
+            localStorage.setItem(CONFIG.DEPARTEMENT_ACTIF_KEY, initialId);
+          }
         } else {
           throw new Error('Erreur API');
         }
@@ -50,11 +68,11 @@ export function DepartementsProvider({ children }) {
         }
         setDepartements(liste);
         const actif = localStorage.getItem(CONFIG.DEPARTEMENT_ACTIF_KEY);
-        setActifId(
-          actif && liste.some((d) => d.id === actif)
-            ? actif
-            : liste[0]?.id || '',
-        );
+        const initialId = choisirDepartementInitial(liste, actif);
+        setActifId(initialId);
+        if (initialId) {
+          localStorage.setItem(CONFIG.DEPARTEMENT_ACTIF_KEY, initialId);
+        }
       } finally {
         setChargement(false);
       }
