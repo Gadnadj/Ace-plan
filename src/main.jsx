@@ -9,18 +9,18 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 );
 
-// Register service worker for PWA (production only)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    const swPath = '/sw.js';
-    navigator.serviceWorker
-      .register(swPath)
-      .then((reg) => {
-        // registration successful
-        console.log('Service worker registered:', reg.scope);
-      })
-      .catch((err) => {
-        console.warn('Service worker registration failed:', err);
-      });
-  });
-}
+// Service worker disabled for now (PWA setup, but cache conflict with API)
+// Re-enable after fixing cache strategy
+// if ('serviceWorker' in navigator) {
+//   window.addEventListener('load', () => {
+//     const swPath = '/sw.js';
+//     navigator.serviceWorker
+//       .register(swPath)
+//       .then((reg) => {
+//         console.log('Service worker registered:', reg.scope);
+//       })
+//       .catch((err) => {
+//         console.warn('Service worker registration failed:', err);
+//       });
+//   });
+// }
