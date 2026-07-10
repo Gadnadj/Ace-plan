@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useZones } from '../context/ZonesContext';
 import { useDepartements } from '../context/DepartementsContext';
@@ -12,48 +12,76 @@ export default function SettingsModal({ onClose }) {
 
   const [nouvelleZone, setNouvelleZone] = useState('');
   const [erreurZone, setErreurZone] = useState('');
-  const [zoneASupprimer, setZoneASupprimer] = useState(null);
 
   const [nouveauDept, setNouveauDept] = useState('');
   const [erreurDept, setErreurDept] = useState('');
-  const [deptASupprimer, setDeptASupprimer] = useState(null);
+  const [suppressionEnAttente, setSuppressionEnAttente] = useState(null);
 
-  const handleAjouterZone = (e) => {
+  useEffect(() => {
+    const precedentOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = precedentOverflow;
+    };
+  }, []);
+
+  const handleAjouterZone = async (e) => {
     e.preventDefault();
-    const resultat = ajouterZone(nouvelleZone);
+    setErreurZone('');
+    const resultat = await ajouterZone(nouvelleZone);
     if (resultat.ok) {
       setNouvelleZone('');
       setErreurZone('');
     } else if (resultat.erreur === 'exists') {
       setErreurZone(he.zoneExists);
-    } else {
+    } else if (resultat.erreur === 'empty') {
       setErreurZone(he.zoneEmpty);
+    } else {
+      setErreurZone(he.zoneSaveError);
     }
   };
 
-  const handleAjouterDept = (e) => {
+  const handleAjouterDept = async (e) => {
     e.preventDefault();
-    const resultat = ajouterDepartement(nouveauDept);
+    setErreurDept('');
+    const resultat = await ajouterDepartement(nouveauDept);
     if (resultat.ok) {
       setNouveauDept('');
       setErreurDept('');
     } else if (resultat.erreur === 'exists') {
       setErreurDept(he.departmentExists);
-    } else {
+    } else if (resultat.erreur === 'empty') {
       setErreurDept(he.departmentEmpty);
+    } else {
+      setErreurDept(he.departmentSaveError);
+    }
+  };
+
+  const handleConfirmerSuppression = async () => {
+    if (!suppressionEnAttente) return;
+
+    if (suppressionEnAttente.type === 'zone') {
+      await supprimerZone(suppressionEnAttente.id);
+      setSuppressionEnAttente(null);
+      return;
+    }
+
+    if (suppressionEnAttente.type === 'departement') {
+      await supprimerDepartement(suppressionEnAttente.id);
+      setSuppressionEnAttente(null);
     }
   };
 
   return (
     <div
-      className='fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center'
+      className='fixed inset-0 z-50 flex items-end justify-center bg-black/45 backdrop-blur-sm sm:items-center'
       onClick={onClose}
       role='dialog'
       aria-modal='true'
       aria-labelledby='settings-titre'
     >
       <div
-        className='flex max-h-[85svh] w-full max-w-lg flex-col rounded-t-3xl bg-white shadow-xl sm:max-h-[80svh] sm:rounded-3xl'
+        className='flex max-h-[85svh] w-full max-w-xl flex-col rounded-t-3xl border border-slate-200 bg-white shadow-xl sm:max-h-[80svh] sm:rounded-3xl'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='border-b border-slate-200 p-6 pb-4'>
@@ -79,36 +107,21 @@ export default function SettingsModal({ onClose }) {
                     <span className='font-semibold text-slate-800'>
                       {d.nom}
                     </span>
-                    {departements.length > 1 &&
-                      (deptASupprimer === d.id ? (
-                        <div className='flex gap-1'>
-                          <button
-                            type='button'
-                            onClick={() => setDeptASupprimer(null)}
-                            className='rounded-lg bg-slate-200 px-2 py-1 text-xs font-medium text-slate-600'
-                          >
-                            {he.cancel}
-                          </button>
-                          <button
-                            type='button'
-                            onClick={() => {
-                              supprimerDepartement(d.id);
-                              setDeptASupprimer(null);
-                            }}
-                            className='rounded-lg bg-red-500 px-2 py-1 text-xs font-medium text-white'
-                          >
-                            {he.confirm}
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type='button'
-                          onClick={() => setDeptASupprimer(d.id)}
-                          className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
-                        >
-                          ✕
-                        </button>
-                      ))}
+                    {departements.length > 1 && (
+                      <button
+                        type='button'
+                        onClick={() =>
+                          setSuppressionEnAttente({
+                            type: 'departement',
+                            id: d.id,
+                            label: d.nom,
+                          })
+                        }
+                        className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
+                      >
+                        ✕
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -129,12 +142,12 @@ export default function SettingsModal({ onClose }) {
                       setErreurDept('');
                     }}
                     placeholder={he.newDepartmentPlaceholder}
-                    className='min-w-0 flex-1 rounded-2xl border-2 border-slate-200 px-4 py-3 text-base font-semibold text-slate-800 outline-none focus:border-amber-500'
+                    className='min-w-0 flex-1 rounded-2xl border border-slate-300 bg-white px-4 py-3 text-base font-semibold text-slate-800 outline-none focus:border-slate-500'
                   />
                   <button
                     type='submit'
                     disabled={!nouveauDept.trim()}
-                    className='shrink-0 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-semibold text-white active:bg-amber-600 disabled:opacity-40'
+                    className='shrink-0 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white active:bg-slate-800 disabled:opacity-40'
                   >
                     {he.add}
                   </button>
@@ -166,35 +179,19 @@ export default function SettingsModal({ onClose }) {
                     <span className='text-xl font-bold text-slate-800'>
                       {z}
                     </span>
-                    {zoneASupprimer === z ? (
-                      <div className='flex gap-1'>
-                        <button
-                          type='button'
-                          onClick={() => setZoneASupprimer(null)}
-                          className='rounded-lg bg-slate-200 px-2 py-1 text-xs font-medium text-slate-600'
-                        >
-                          {he.cancel}
-                        </button>
-                        <button
-                          type='button'
-                          onClick={() => {
-                            supprimerZone(z);
-                            setZoneASupprimer(null);
-                          }}
-                          className='rounded-lg bg-red-500 px-2 py-1 text-xs font-medium text-white'
-                        >
-                          {he.confirm}
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type='button'
-                        onClick={() => setZoneASupprimer(z)}
-                        className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
-                      >
-                        ✕
-                      </button>
-                    )}
+                    <button
+                      type='button'
+                      onClick={() =>
+                        setSuppressionEnAttente({
+                          type: 'zone',
+                          id: z,
+                          label: z,
+                        })
+                      }
+                      className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
+                    >
+                      ✕
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -211,7 +208,7 @@ export default function SettingsModal({ onClose }) {
                 <input
                   id='nouvelle-zone'
                   type='text'
-                  maxLength={2}
+                  maxLength={1}
                   value={nouvelleZone}
                   onChange={(e) => {
                     setNouvelleZone(
@@ -220,12 +217,12 @@ export default function SettingsModal({ onClose }) {
                     setErreurZone('');
                   }}
                   placeholder={he.newZonePlaceholder}
-                  className='w-20 rounded-2xl border-2 border-slate-200 px-4 py-3 text-center text-xl font-bold text-slate-800 outline-none focus:border-amber-500'
+                  className='w-20 rounded-2xl border border-slate-300 bg-white px-4 py-3 text-center text-xl font-bold text-slate-800 outline-none focus:border-slate-500'
                 />
                 <button
                   type='submit'
                   disabled={!nouvelleZone.trim()}
-                  className='flex-1 rounded-2xl bg-amber-500 px-5 py-3 text-sm font-semibold text-white active:bg-amber-600 disabled:opacity-40'
+                  className='flex-1 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white active:bg-slate-800 disabled:opacity-40'
                 >
                   {he.add}
                 </button>
@@ -240,6 +237,32 @@ export default function SettingsModal({ onClose }) {
         </div>
 
         <div className='border-t border-slate-200 p-4'>
+          {suppressionEnAttente && (
+            <div className='mb-4 rounded-2xl border border-red-200 bg-red-50 p-3'>
+              <p className='text-sm font-semibold text-red-800'>
+                {suppressionEnAttente.type === 'zone'
+                  ? he.confirmDeleteZone(suppressionEnAttente.label)
+                  : he.confirmDeleteDepartment(suppressionEnAttente.label)}
+              </p>
+              <div className='mt-3 flex gap-2'>
+                <button
+                  type='button'
+                  onClick={() => setSuppressionEnAttente(null)}
+                  className='flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-700 active:bg-slate-100'
+                >
+                  {he.cancel}
+                </button>
+                <button
+                  type='button'
+                  onClick={handleConfirmerSuppression}
+                  className='flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-semibold text-white active:bg-red-700'
+                >
+                  {he.confirm}
+                </button>
+              </div>
+            </div>
+          )}
+
           <button
             type='button'
             onClick={onClose}

@@ -15,7 +15,6 @@ function MainApp() {
   const [recherche, setRecherche] = useState('')
   const [modalAjout, setModalAjout] = useState(false)
   const {
-    colis,
     chargement,
     modifierEmplacement,
     ajouterColis,
@@ -50,29 +49,40 @@ function MainApp() {
   }
 
   return (
-    <div className="min-h-svh">
+    <div className="min-h-svh bg-transparent">
       <Header />
-      <SearchBar valeur={recherche} onChange={setRecherche} />
+      <main className="mx-auto w-full max-w-4xl px-3 pb-10 sm:px-5">
+        <section className="panel-3d mt-4 rounded-2xl bg-white p-3 sm:p-4">
+          <SearchBar valeur={recherche} onChange={setRecherche} />
+          {isGestion && (
+            <div className="px-1 pb-2">
+              <button
+                type="button"
+                onClick={() => setModalAjout(true)}
+                className="button-3d mx-auto flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-red-600 to-red-700 py-3.5 text-base font-semibold text-white active:from-red-700 active:to-red-800"
+              >
+                <span className="text-xl leading-none">+</span>
+                {he.addPackage}
+              </button>
+            </div>
+          )}
+        </section>
 
-      {isGestion && (
-        <div className="px-4 pb-3">
-          <button
-            type="button"
-            onClick={() => setModalAjout(true)}
-            className="mx-auto flex w-full max-w-lg items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50 py-4 text-base font-semibold text-amber-700 active:bg-amber-100"
-          >
-            <span className="text-xl">+</span>
-            {he.addPackage}
-          </button>
-        </div>
-      )}
-
-      <ColisList
-        colis={colisFiltres}
-        onModifier={modifierEmplacement}
-        onSupprimer={supprimerColis}
-        recherche={recherche}
-      />
+        <section className="panel-3d mt-4 rounded-2xl bg-white p-2 sm:p-3">
+          <div className="mb-2 flex items-center justify-between px-2 sm:px-3">
+            <p className="text-sm font-semibold text-slate-600">{departementActif?.nom}</p>
+            <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
+              {colisFiltres.length}
+            </span>
+          </div>
+          <ColisList
+            colis={colisFiltres}
+            onModifier={modifierEmplacement}
+            onSupprimer={supprimerColis}
+            recherche={recherche}
+          />
+        </section>
+      </main>
 
       {modalAjout && (
         <AddColisModal

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { he } from '../i18n/he'
 
@@ -6,6 +6,14 @@ export default function AdminPinModal({ onClose }) {
   const { loginGestion } = useAuth()
   const [pin, setPin] = useState('')
   const [erreur, setErreur] = useState('')
+
+  useEffect(() => {
+    const precedentOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = precedentOverflow
+    }
+  }, [])
 
   const tryLogin = (value) => {
     setErreur('')
@@ -27,14 +35,14 @@ export default function AdminPinModal({ onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 backdrop-blur-sm sm:items-center"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-pin-titre"
     >
       <div
-        className="w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-xl sm:rounded-3xl"
+        className="w-full max-w-md rounded-t-3xl border border-slate-200 bg-white p-6 shadow-2xl sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="modal-pin-titre" className="text-xl font-bold text-slate-800">
@@ -61,7 +69,7 @@ export default function AdminPinModal({ onClose }) {
             placeholder="••••"
             autoFocus
             dir="ltr"
-            className="mb-4 w-full rounded-2xl border-2 border-slate-200 px-6 py-5 text-center text-3xl font-bold tracking-[0.5em] text-slate-800 outline-none focus:border-amber-500"
+            className="mb-4 w-full rounded-2xl border border-slate-300 px-6 py-5 text-center text-3xl font-bold tracking-[0.5em] text-slate-800 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
             aria-label={he.pinLabel}
           />
 
@@ -75,14 +83,14 @@ export default function AdminPinModal({ onClose }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-2xl bg-slate-100 py-4 text-base font-semibold text-slate-600 active:bg-slate-200"
+              className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 py-4 text-base font-semibold text-slate-700 active:bg-slate-100"
             >
               {he.cancel}
             </button>
             <button
               type="submit"
               disabled={pin.length !== 4}
-              className="flex-1 rounded-2xl bg-amber-500 py-4 text-base font-semibold text-white active:bg-amber-600 disabled:opacity-40"
+              className="flex-1 rounded-2xl bg-slate-900 py-4 text-base font-semibold text-white active:bg-slate-800 disabled:opacity-40"
             >
               {he.confirm}
             </button>

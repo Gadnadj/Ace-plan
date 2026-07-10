@@ -61,8 +61,8 @@ export default function LocationInput({ value, onChange, autoFocus = false }) {
             onClick={() => handleZone(z)}
             className={`flex h-16 w-16 items-center justify-center rounded-2xl text-2xl font-bold transition-colors ${
               zoneActive === z
-                ? 'bg-amber-500 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-700 active:bg-slate-200'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'border border-slate-200 bg-slate-50 text-slate-700 active:bg-slate-100'
             }`}
           >
             {z}
@@ -86,7 +86,7 @@ export default function LocationInput({ value, onChange, autoFocus = false }) {
             autoFocus={autoFocus}
             placeholder={he.numberPlaceholder}
             aria-label={he.locationNumber}
-            className="w-24 rounded-2xl border-2 border-slate-200 px-4 py-4 text-center text-2xl font-bold text-slate-800 outline-none focus:border-amber-500"
+            className="w-24 rounded-2xl border border-slate-300 px-4 py-4 text-center text-2xl font-bold text-slate-800 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
           />
         </div>
       </div>

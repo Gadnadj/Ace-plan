@@ -24,38 +24,39 @@ function ColisCard({ colis, onModifier, onSupprimer }) {
 
   return (
     <>
-      <div className='rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200'>
+      <div className='card-3d relative overflow-hidden rounded-xl border border-red-100 bg-white p-4'>
+        <span className='absolute inset-y-0 right-0 w-1.5 bg-gradient-to-b from-red-400 to-red-600' />
         <div className='flex items-start justify-between gap-3'>
           <div className='min-w-0 flex-1 text-start'>
-            <p className='text-2xl font-bold tracking-wider text-slate-800'>
+            <p className='text-2xl font-bold tracking-wider text-slate-900'>
               <span dir='ltr'>{colis.code}</span>
             </p>
 
-            <div className='mt-2'>
-              <p className='text-lg font-semibold text-blue-700'>
+            <div className='mt-1.5'>
+              <p className='text-lg font-semibold text-red-700'>
                 <span dir='ltr'>{colis.emplacement}</span>
               </p>
             </div>
 
-            <p className='mt-1 text-sm text-slate-400'>
+            <p className='mt-1.5 text-sm text-slate-500'>
               {he.updatedAt}
               {formaterDate(colis.updatedAt || colis.dateModification)}
             </p>
           </div>
 
           {isGestion && (
-            <div className='flex shrink-0 flex-col gap-2'>
+            <div className='flex shrink-0 flex-col gap-2.5'>
               <button
                 type='button'
                 onClick={() => setModalModifier(true)}
-                className='rounded-xl bg-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-sm active:bg-amber-600'
+                className='button-3d rounded-lg bg-gradient-to-b from-red-600 to-red-700 px-4 py-2.5 text-sm font-semibold text-white active:from-red-700 active:to-red-800'
               >
                 {he.edit}
               </button>
               <button
                 type='button'
                 onClick={() => setModalSupprimer(true)}
-                className='rounded-xl bg-red-100 px-5 py-3 text-sm font-semibold text-red-700 active:bg-red-200'
+                className='button-3d rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 active:bg-red-100'
               >
                 {he.delete}
               </button>
@@ -94,9 +95,9 @@ export default function ColisList({
 }) {
   if (colis.length === 0) {
     return (
-      <div className='px-4 py-12 text-center'>
-        <p className='text-5xl'>📭</p>
-        <p className='mt-4 text-lg font-medium text-slate-600'>
+      <div className='rounded-xl border border-dashed border-red-200 bg-red-50/40 px-4 py-14 text-center'>
+        <p className='text-6xl'>📭</p>
+        <p className='mt-4 text-lg font-semibold text-slate-600'>
           {recherche ? he.noPackagesFor(recherche) : he.noPackages}
         </p>
       </div>
@@ -104,8 +105,8 @@ export default function ColisList({
   }
 
   return (
-    <div className='flex flex-col gap-3 px-4 pb-8'>
-      <p className='text-sm text-slate-500'>{he.packagesShown(colis.length)}</p>
+    <div className='flex flex-col gap-3 px-1 pb-8'>
+      <p className='px-3 text-sm font-medium text-slate-500'>{he.packagesShown(colis.length)}</p>
       {colis.map((c) => (
         <ColisCard
           key={c.id}

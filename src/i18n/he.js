@@ -19,6 +19,7 @@ export const he = {
   newDepartmentPlaceholder: 'למשל: מלאי גנים',
   departmentExists: 'המחלקה כבר קיימת',
   departmentEmpty: 'יש להזין שם',
+  departmentSaveError: 'שגיאה בשמירת המחלקה',
 
   // הגדרות
   settings: 'הגדרות',
@@ -30,6 +31,7 @@ export const he = {
   noZones: 'אין אזורים מוגדרים',
   zoneExists: 'האות כבר קיימת',
   zoneEmpty: 'יש להזין אות',
+  zoneSaveError: 'שגיאה בשמירת האזור',
 
   // מיקום
   locationNumber: 'מספר מיקום',
@@ -80,6 +82,8 @@ export const he = {
   deleteTitle: 'למחוק חבילה זו?',
   deleteMessage: (code, location) =>
     `החבילה ${code} (${location}) תימחק לצמיתות.`,
+  confirmDeleteZone: (zone) => `למחוק את האזור ${zone}?`,
+  confirmDeleteDepartment: (department) => `למחוק את המחלקה ${department}?`,
 
   // שגיאות
   codeMustBe3Digits: 'הקוד חייב להכיל בדיוק 3 ספרות',

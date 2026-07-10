@@ -92,6 +92,12 @@ export function ZonesProvider({ children }) {
       if (!valeur) return { ok: false, erreur: 'empty' };
       if (zones.includes(valeur)) return { ok: false, erreur: 'exists' };
 
+      const ajouterLocal = () => {
+        const triee = [...zones, valeur].sort((a, b) => a.localeCompare(b));
+        setZones(triee);
+        localStorage.setItem(cleZones(actifId), JSON.stringify(triee));
+      };
+
       try {
         const res = await fetch(`${API_URL}/api/zones`, {
           method: 'POST',
@@ -100,17 +106,30 @@ export function ZonesProvider({ children }) {
         });
 
         if (res.ok) {
-          const triee = [...zones, valeur].sort((a, b) => a.localeCompare(b));
-          setZones(triee);
-          localStorage.setItem(cleZones(actifId), JSON.stringify(triee));
+          ajouterLocal();
           return { ok: true };
         } else {
-          const { erreur } = await res.json();
-          return { ok: false, erreur };
+          let erreur = 'error';
+          try {
+            const data = await res.json();
+            erreur = data?.erreur || 'error';
+          } catch {
+            erreur = 'error';
+          }
+
+          if (erreur === 'exists' || erreur === 'empty') {
+            return { ok: false, erreur };
+          }
+
+          // Fallback local si l'API renvoie une erreur non gérée
+          ajouterLocal();
+          return { ok: true, fallback: true };
         }
       } catch (err) {
         console.error('Erreur ajout zone:', err);
-        return { ok: false, erreur: 'error' };
+        // Fallback local en cas d'absence backend/réseau
+        ajouterLocal();
+        return { ok: true, fallback: true };
       }
     },
     [zones, actifId],

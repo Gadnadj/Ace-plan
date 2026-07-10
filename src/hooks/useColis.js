@@ -7,6 +7,12 @@ import { parseEmplacement } from '../utils/emplacement'
 
 const API_URL = CONFIG.API_BASE_URL
 
+function normaliserRechercheTexte(valeur) {
+  return String(valeur || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+}
+
 function genererId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
@@ -198,12 +204,12 @@ export function useColis() {
 
   const filtrerColis = useCallback(
     (recherche) => {
-      const terme = recherche.trim().toUpperCase()
+      const terme = normaliserRechercheTexte(recherche)
       if (!terme) return colis
 
       return colis.filter((c) => {
-        const code = String(c.code || '').toUpperCase()
-        const emplacement = String(c.emplacement || '').toUpperCase()
+        const code = normaliserRechercheTexte(c.code)
+        const emplacement = normaliserRechercheTexte(c.emplacement)
         return code.includes(terme) || emplacement.includes(terme)
       })
     },
