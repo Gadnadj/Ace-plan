@@ -4,8 +4,10 @@ import { he } from '../i18n/he';
 import ModifyModal from './ModifyModal';
 import DeleteColisModal from './DeleteColisModal';
 
-function formaterDate(dateISO) {
-  const date = new Date(dateISO);
+function formaterDate(dateValue) {
+  if (!dateValue) return 'N/A';
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return 'N/A';
   return date.toLocaleDateString('he-IL', {
     day: '2-digit',
     month: '2-digit',

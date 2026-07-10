@@ -14,6 +14,15 @@ const PIN_GESTION = process.env.PIN_GESTION || '1234'
 app.use(cors())
 app.use(express.json())
 
+// Serialize dates properly
+app.use((req, res, originalJson) => {
+    const json = res.json
+    res.json = function (data) {
+        return json.call(this, JSON.parse(JSON.stringify(data)))
+    }
+    originalJson.call(this)
+})
+
 // Connexion MongoDB
 mongoose.connect(process.env.MONGODB_URI).then(() => {
     console.log('✓ Connecté à MongoDB')
