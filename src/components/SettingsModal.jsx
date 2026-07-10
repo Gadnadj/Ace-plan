@@ -157,7 +157,7 @@ export default function SettingsModal({ onClose }) {
             {zones.length === 0 ? (
               <p className='py-6 text-center text-slate-400'>{he.noZones}</p>
             ) : (
-              <ul className='mb-6 flex flex-wrap gap-2 ltr'>
+              <ul dir='ltr' className='mb-6 flex flex-wrap gap-2'>
                 {zones.map((z) => (
                   <li
                     key={z}
