@@ -85,6 +85,7 @@ function MainApp() {
             onModifier={modifierEmplacement}
             onSupprimer={supprimerColis}
             recherche={recherche}
+            departementNom={departementActif?.nom || he.appName}
           />
         </section>
       </main>
