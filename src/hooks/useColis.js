@@ -62,6 +62,14 @@ export function useColis() {
     return map
   }, [departements])
 
+  const couleurParDepartement = useMemo(() => {
+    const map = {}
+    departements.forEach((d) => {
+      map[d.id] = d.couleur
+    })
+    return map
+  }, [departements])
+
   const chargerColisParDepartement = useCallback(async (departementId) => {
     try {
       const res = await fetch(`${API_URL}/api/colis/${departementId}`)
@@ -118,6 +126,7 @@ export function useColis() {
           ...c,
           departementId: c.departementId || departement.id,
           categorieNom: departement.nom,
+          categorieCouleur: departement.couleur,
         }))
       })
     )
@@ -301,7 +310,12 @@ export function useColis() {
       // ללא חיפוש: מציגים רק את המחלקה הפעילה
       if (!terme) {
         const nomActif = nomParDepartement[actifId] || ''
-        return colis.map((c) => ({ ...c, categorieNom: c.categorieNom || nomActif }))
+        const couleurActive = couleurParDepartement[actifId]
+        return colis.map((c) => ({
+          ...c,
+          categorieNom: c.categorieNom || nomActif,
+          categorieCouleur: c.categorieCouleur || couleurActive,
+        }))
       }
 
       // חיפוש: מחפשים בכל המחלקות ומציגים את הקטגוריה של כל תוצאה
@@ -311,7 +325,7 @@ export function useColis() {
         return code.includes(terme) || emplacement.includes(terme)
       })
     },
-    [colis, colisGlobaux, actifId, nomParDepartement]
+    [colis, colisGlobaux, actifId, nomParDepartement, couleurParDepartement]
   )
 
   return {

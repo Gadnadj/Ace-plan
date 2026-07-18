@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { he } from '../i18n/he';
+import { classeDot } from '../utils/couleurs';
 import ModifyModal from './ModifyModal';
 import DeleteColisModal from './DeleteColisModal';
 
@@ -50,7 +51,9 @@ function ColisCard({
 
             <div className='mt-2.5 flex justify-start'>
               <span className='inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1'>
-                <span className='h-2 w-2 shrink-0 rounded-full bg-red-500' />
+                <span
+                  className={`h-2 w-2 shrink-0 rounded-full ${classeDot(colis.categorieCouleur)}`}
+                />
                 <span className='text-sm font-semibold text-slate-700'>
                   {colis.categorieNom || departementNom}
                 </span>

@@ -3,6 +3,35 @@ import { useAuth } from '../context/AuthContext';
 import { useZones } from '../context/ZonesContext';
 import { useDepartements } from '../context/DepartementsContext';
 import { he } from '../i18n/he';
+import {
+  COULEURS_CATEGORIE,
+  COULEUR_PAR_DEFAUT,
+  classeDot,
+} from '../utils/couleurs';
+
+function SelecteurCouleur({ valeur, onChange }) {
+  return (
+    <div dir='ltr' className='flex flex-wrap gap-2'>
+      {COULEURS_CATEGORIE.map((c) => {
+        const selectionne = valeur === c.cle;
+        return (
+          <button
+            key={c.cle}
+            type='button'
+            aria-label={c.nom}
+            title={c.nom}
+            onClick={() => onChange(c.cle)}
+            className={`h-7 w-7 rounded-full ${c.dot} transition ${
+              selectionne
+                ? 'ring-2 ring-slate-800 ring-offset-2'
+                : 'ring-1 ring-slate-200'
+            }`}
+          />
+        );
+      })}
+    </div>
+  );
+}
 
 export default function SettingsModal({ onClose }) {
   const { isGestion } = useAuth();
@@ -10,7 +39,7 @@ export default function SettingsModal({ onClose }) {
   const {
     departements,
     ajouterDepartement,
-    renommerDepartement,
+    modifierDepartement,
     supprimerDepartement,
   } = useDepartements();
 
@@ -18,6 +47,8 @@ export default function SettingsModal({ onClose }) {
   const [erreurZone, setErreurZone] = useState('');
 
   const [nouveauDept, setNouveauDept] = useState('');
+  const [couleurNouveauDept, setCouleurNouveauDept] =
+    useState(COULEUR_PAR_DEFAUT);
   const [erreurDept, setErreurDept] = useState('');
   const [suppressionEnAttente, setSuppressionEnAttente] = useState(null);
 
@@ -51,9 +82,10 @@ export default function SettingsModal({ onClose }) {
   const handleAjouterDept = async (e) => {
     e.preventDefault();
     setErreurDept('');
-    const resultat = await ajouterDepartement(nouveauDept);
+    const resultat = await ajouterDepartement(nouveauDept, couleurNouveauDept);
     if (resultat.ok) {
       setNouveauDept('');
+      setCouleurNouveauDept(COULEUR_PAR_DEFAUT);
       setErreurDept('');
     } else if (resultat.erreur === 'exists') {
       setErreurDept(he.departmentExists);
@@ -66,10 +98,10 @@ export default function SettingsModal({ onClose }) {
 
   const handleRenommerDept = async () => {
     if (!editionDept) return;
-    const resultat = await renommerDepartement(
-      editionDept.id,
-      editionDept.valeur,
-    );
+    const resultat = await modifierDepartement(editionDept.id, {
+      nom: editionDept.valeur,
+      couleur: editionDept.couleur,
+    });
     if (resultat.ok) {
       setEditionDept(null);
       setErreurEdition('');
@@ -132,19 +164,25 @@ export default function SettingsModal({ onClose }) {
                       className='rounded-xl bg-slate-50 px-4 py-3'
                     >
                       {enEdition ? (
-                        <div className='flex flex-col gap-2'>
+                        <div className='flex flex-col gap-3'>
                           <input
                             type='text'
                             autoFocus
                             value={editionDept.valeur}
                             onChange={(e) => {
-                              setEditionDept({
-                                id: d.id,
+                              setEditionDept((prev) => ({
+                                ...prev,
                                 valeur: e.target.value,
-                              });
+                              }));
                               setErreurEdition('');
                             }}
                             className='w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-base font-semibold text-slate-800 outline-none focus:border-slate-500'
+                          />
+                          <SelecteurCouleur
+                            valeur={editionDept.couleur}
+                            onChange={(couleur) =>
+                              setEditionDept((prev) => ({ ...prev, couleur }))
+                            }
                           />
                           {erreurEdition && (
                             <p className='text-sm text-red-600' role='alert'>
@@ -174,16 +212,25 @@ export default function SettingsModal({ onClose }) {
                         </div>
                       ) : (
                         <div className='flex items-center justify-between gap-2'>
-                          <span className='min-w-0 flex-1 truncate font-semibold text-slate-800'>
-                            {d.nom}
-                          </span>
+                          <div className='flex min-w-0 flex-1 items-center gap-2'>
+                            <span
+                              className={`h-3 w-3 shrink-0 rounded-full ${classeDot(d.couleur)}`}
+                            />
+                            <span className='min-w-0 flex-1 truncate font-semibold text-slate-800'>
+                              {d.nom}
+                            </span>
+                          </div>
                           <div className='flex shrink-0 items-center gap-2'>
                             <button
                               type='button'
                               aria-label={he.renameDepartment}
                               title={he.renameDepartment}
                               onClick={() => {
-                                setEditionDept({ id: d.id, valeur: d.nom });
+                                setEditionDept({
+                                  id: d.id,
+                                  valeur: d.nom,
+                                  couleur: d.couleur || COULEUR_PAR_DEFAUT,
+                                });
                                 setErreurEdition('');
                               }}
                               className='rounded-lg bg-slate-200 p-2 text-slate-700 active:bg-slate-300'
@@ -251,6 +298,15 @@ export default function SettingsModal({ onClose }) {
                   >
                     {he.add}
                   </button>
+                </div>
+                <div className='mt-3'>
+                  <p className='mb-2 text-xs font-medium text-slate-500'>
+                    {he.categoryColor}
+                  </p>
+                  <SelecteurCouleur
+                    valeur={couleurNouveauDept}
+                    onChange={setCouleurNouveauDept}
+                  />
                 </div>
                 {erreurDept && (
                   <p className='mt-2 text-sm text-red-600' role='alert'>

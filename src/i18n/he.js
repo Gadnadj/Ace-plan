@@ -21,6 +21,7 @@ export const he = {
   departmentEmpty: 'יש להזין שם',
   departmentSaveError: 'שגיאה בשמירת המחלקה',
   renameDepartment: 'שינוי שם המחלקה',
+  categoryColor: 'צבע הקטגוריה',
 
   // הגדרות
   settings: 'הגדרות',

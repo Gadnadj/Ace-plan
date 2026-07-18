@@ -53,13 +53,13 @@ app.get('/api/departements', async (req, res) => {
 
 app.post('/api/departements', async (req, res) => {
     try {
-        const { nom } = req.body
+        const { nom, couleur } = req.body
         const existe = await Departement.findOne({ nom })
         if (existe) {
             return res.status(400).json({ ok: false, erreur: 'exists' })
         }
         const id = `dept-${Date.now()}`
-        const dept = await Departement.create({ _id: id, nom })
+        const dept = await Departement.create({ _id: id, nom, couleur: couleur || 'slate' })
         res.json({ ok: true, dept })
     } catch (err) {
         res.status(500).json({ ok: false, error: err.message })
@@ -68,22 +68,30 @@ app.post('/api/departements', async (req, res) => {
 
 app.patch('/api/departements/:id', async (req, res) => {
     try {
-        const nomNettoye = String(req.body.nom || '').trim()
-        if (!nomNettoye) {
-            return res.status(400).json({ ok: false, erreur: 'empty' })
+        const updates = {}
+
+        if (req.body.nom !== undefined) {
+            const nomNettoye = String(req.body.nom).trim()
+            if (!nomNettoye) {
+                return res.status(400).json({ ok: false, erreur: 'empty' })
+            }
+            const existe = await Departement.findOne({
+                nom: nomNettoye,
+                _id: { $ne: req.params.id }
+            })
+            if (existe) {
+                return res.status(400).json({ ok: false, erreur: 'exists' })
+            }
+            updates.nom = nomNettoye
         }
 
-        const existe = await Departement.findOne({
-            nom: nomNettoye,
-            _id: { $ne: req.params.id }
-        })
-        if (existe) {
-            return res.status(400).json({ ok: false, erreur: 'exists' })
+        if (req.body.couleur !== undefined) {
+            updates.couleur = req.body.couleur
         }
 
         const dept = await Departement.findByIdAndUpdate(
             req.params.id,
-            { nom: nomNettoye },
+            updates,
             { new: true }
         )
         res.json({ ok: true, dept })

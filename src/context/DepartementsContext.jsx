@@ -7,6 +7,15 @@ import {
 } from 'react';
 import departementsInitiaux from '../data/departements.json';
 import { CONFIG } from '../config';
+import { resoudreCouleur, COULEUR_PAR_DEFAUT } from '../utils/couleurs';
+
+function mapperDepartement(d) {
+  return {
+    id: d.id ?? d._id,
+    nom: d.nom,
+    couleur: resoudreCouleur(d.couleur, d.nom),
+  };
+}
 
 const DepartementsContext = createContext(null);
 
@@ -42,7 +51,7 @@ export function DepartementsProvider({ children }) {
         const res = await fetch(`${API_URL}/api/departements`);
         if (res.ok) {
           const depts = await res.json();
-          const deptsMappees = depts.map((d) => ({ id: d._id, nom: d.nom }));
+          const deptsMappees = depts.map(mapperDepartement);
           setDepartements(deptsMappees);
 
           const actif = localStorage.getItem(CONFIG.DEPARTEMENT_ACTIF_KEY);
@@ -66,7 +75,7 @@ export function DepartementsProvider({ children }) {
             liste = departementsInitiaux;
           }
         }
-        setDepartements(liste);
+        setDepartements(liste.map(mapperDepartement));
         const actif = localStorage.getItem(CONFIG.DEPARTEMENT_ACTIF_KEY);
         const initialId = choisirDepartementInitial(liste, actif);
         setActifId(initialId);
@@ -86,7 +95,7 @@ export function DepartementsProvider({ children }) {
   }, []);
 
   const ajouterDepartement = useCallback(
-    async (nom) => {
+    async (nom, couleur = COULEUR_PAR_DEFAUT) => {
       const nomNettoye = nom.trim();
       if (!nomNettoye) return { ok: false, erreur: 'empty' };
 
@@ -94,12 +103,12 @@ export function DepartementsProvider({ children }) {
         const res = await fetch(`${API_URL}/api/departements`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nom: nomNettoye }),
+          body: JSON.stringify({ nom: nomNettoye, couleur }),
         });
 
         if (res.ok) {
           const { dept } = await res.json();
-          const nouveau = { id: dept._id, nom: dept.nom };
+          const nouveau = mapperDepartement(dept);
           setDepartements([...departements, nouveau]);
           return { ok: true };
         } else {
@@ -114,20 +123,29 @@ export function DepartementsProvider({ children }) {
     [departements],
   );
 
-  const renommerDepartement = useCallback(
-    async (id, nom) => {
-      const nomNettoye = nom.trim();
-      if (!nomNettoye) return { ok: false, erreur: 'empty' };
+  const modifierDepartement = useCallback(
+    async (id, changes = {}) => {
+      const modifieNom = changes.nom !== undefined;
+      const modifieCouleur = changes.couleur !== undefined;
+      const nomNettoye = modifieNom ? changes.nom.trim() : undefined;
 
-      const existeDeja = departements.some(
-        (d) => d.id !== id && d.nom === nomNettoye,
-      );
-      if (existeDeja) return { ok: false, erreur: 'exists' };
+      if (modifieNom && !nomNettoye) return { ok: false, erreur: 'empty' };
+
+      if (modifieNom) {
+        const existeDeja = departements.some(
+          (d) => d.id !== id && d.nom === nomNettoye,
+        );
+        if (existeDeja) return { ok: false, erreur: 'exists' };
+      }
+
+      const appliquer = (d) => ({
+        ...d,
+        ...(modifieNom ? { nom: nomNettoye } : {}),
+        ...(modifieCouleur ? { couleur: changes.couleur } : {}),
+      });
 
       const appliquerLocal = () => {
-        const liste = departements.map((d) =>
-          d.id === id ? { ...d, nom: nomNettoye } : d,
-        );
+        const liste = departements.map((d) => (d.id === id ? appliquer(d) : d));
         setDepartements(liste);
         localStorage.setItem(
           CONFIG.DEPARTEMENTS_STORAGE_KEY,
@@ -135,16 +153,20 @@ export function DepartementsProvider({ children }) {
         );
       };
 
+      const body = {};
+      if (modifieNom) body.nom = nomNettoye;
+      if (modifieCouleur) body.couleur = changes.couleur;
+
       try {
         const res = await fetch(`${API_URL}/api/departements/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nom: nomNettoye }),
+          body: JSON.stringify(body),
         });
 
         if (res.ok) {
           setDepartements((prev) =>
-            prev.map((d) => (d.id === id ? { ...d, nom: nomNettoye } : d)),
+            prev.map((d) => (d.id === id ? appliquer(d) : d)),
           );
           return { ok: true };
         }
@@ -156,7 +178,7 @@ export function DepartementsProvider({ children }) {
         appliquerLocal();
         return { ok: true, fallback: true };
       } catch (err) {
-        console.error('Erreur renommage département:', err);
+        console.error('Erreur modification département:', err);
         appliquerLocal();
         return { ok: true, fallback: true };
       }
@@ -202,7 +224,7 @@ export function DepartementsProvider({ children }) {
         chargement,
         changerDepartement,
         ajouterDepartement,
-        renommerDepartement,
+        modifierDepartement,
         supprimerDepartement,
       }}
     >

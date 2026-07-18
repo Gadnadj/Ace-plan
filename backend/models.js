@@ -4,6 +4,7 @@ const departementSchema = new mongoose.Schema(
     {
         _id: String,
         nom: { type: String, required: true, unique: true },
+        couleur: { type: String, default: 'slate' },
         actif: { type: Boolean, default: true },
     },
     { timestamps: true }
