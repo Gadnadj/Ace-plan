@@ -4,11 +4,6 @@ import { he } from '../i18n/he';
 import ModifyModal from './ModifyModal';
 import DeleteColisModal from './DeleteColisModal';
 
-function estRechercheCode(recherche) {
-  const terme = String(recherche || '').trim().replace(/\s+/g, '');
-  return /^\d+$/.test(terme);
-}
-
 function formaterDate(dateValue) {
   if (!dateValue) return he.notUpdated;
   const date = new Date(dateValue);
@@ -26,7 +21,6 @@ function ColisCard({
   colis,
   onModifier,
   onSupprimer,
-  showCategorie,
   departementNom,
 }) {
   const { isGestion } = useAuth();
@@ -54,14 +48,12 @@ function ColisCard({
               {formaterDate(colis.updatedAt || colis.dateModification)}
             </p>
 
-            {showCategorie && (
-              <p className='mt-1 text-sm text-slate-500'>
-                {he.category}:{' '}
-                <span className='font-semibold text-slate-700'>
-                  {colis.categorieNom || departementNom}
-                </span>
-              </p>
-            )}
+            <p className='mt-1 text-sm text-slate-500'>
+              {he.category}:{' '}
+              <span className='font-semibold text-slate-700'>
+                {colis.categorieNom || departementNom}
+              </span>
+            </p>
           </div>
 
           {isGestion && (
@@ -114,8 +106,6 @@ export default function ColisList({
   recherche,
   departementNom,
 }) {
-  const showCategorie = estRechercheCode(recherche);
-
   if (colis.length === 0) {
     return (
       <div className='rounded-xl border border-dashed border-red-200 bg-red-50/40 px-4 py-14 text-center'>
@@ -136,7 +126,6 @@ export default function ColisList({
           colis={c}
           onModifier={onModifier}
           onSupprimer={onSupprimer}
-          showCategorie={showCategorie}
           departementNom={departementNom}
         />
       ))}
