@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { he } from '../i18n/he'
 
 export default function DeleteColisModal({ colis, onClose, onConfirm }) {
@@ -10,7 +11,7 @@ export default function DeleteColisModal({ colis, onClose, onConfirm }) {
     }
   }, [])
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 backdrop-blur-sm sm:items-center"
       onClick={onClose}
@@ -49,6 +50,7 @@ export default function DeleteColisModal({ colis, onClose, onConfirm }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { he } from '../i18n/he'
 import LocationInput from './LocationInput'
 
@@ -23,7 +24,7 @@ export default function ModifyModal({ colis, onClose, onSave }) {
     onSave(emplacement)
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-3 backdrop-blur-sm sm:items-center sm:p-0"
       onClick={onClose}
@@ -85,6 +86,7 @@ export default function ModifyModal({ colis, onClose, onSave }) {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
