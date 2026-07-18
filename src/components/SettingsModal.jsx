@@ -180,13 +180,28 @@ export default function SettingsModal({ onClose }) {
                           <div className='flex shrink-0 items-center gap-2'>
                             <button
                               type='button'
+                              aria-label={he.renameDepartment}
+                              title={he.renameDepartment}
                               onClick={() => {
                                 setEditionDept({ id: d.id, valeur: d.nom });
                                 setErreurEdition('');
                               }}
-                              className='rounded-lg bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 active:bg-slate-300'
+                              className='rounded-lg bg-slate-200 p-2 text-slate-700 active:bg-slate-300'
                             >
-                              {he.edit}
+                              <svg
+                                xmlns='http://www.w3.org/2000/svg'
+                                viewBox='0 0 24 24'
+                                fill='none'
+                                stroke='currentColor'
+                                strokeWidth='2'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                className='h-4 w-4'
+                                aria-hidden='true'
+                              >
+                                <path d='M12 20h9' />
+                                <path d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z' />
+                              </svg>
                             </button>
                             {departements.length > 1 && (
                               <button
