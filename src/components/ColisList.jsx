@@ -48,12 +48,12 @@ function ColisCard({
               {formaterDate(colis.updatedAt || colis.dateModification)}
             </p>
 
-            <div className='mt-2.5'>
-              <span className='inline-flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-bold text-red-700'>
-                <span className='text-xs font-medium text-red-400'>
-                  {he.category}
+            <div className='mt-2.5 flex justify-start'>
+              <span className='inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1'>
+                <span className='h-2 w-2 shrink-0 rounded-full bg-red-500' />
+                <span className='text-sm font-semibold text-slate-700'>
+                  {colis.categorieNom || departementNom}
                 </span>
-                {colis.categorieNom || departementNom}
               </span>
             </div>
           </div>
