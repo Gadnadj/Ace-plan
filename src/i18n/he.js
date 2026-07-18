@@ -72,6 +72,9 @@ export const he = {
   location: 'מיקום',
   close: 'סגירה',
   codePlaceholder: 'למשל: 501',
+  addAnyway: 'להוסיף בכל זאת',
+  duplicateCodeWarning: (code, departements) =>
+    `הקוד ${code} כבר קיים במחלקה: ${departements.join(', ')}. להוסיף בכל זאת?`,
 
   // עריכה
   editTitle: 'עריכת מיקום',

@@ -6,6 +6,7 @@ export default function AddColisModal({ onClose, onSave }) {
   const [code, setCode] = useState('')
   const [emplacement, setEmplacement] = useState('')
   const [erreur, setErreur] = useState('')
+  const [doublonsDepartements, setDoublonsDepartements] = useState([])
 
   useEffect(() => {
     const precedentOverflow = document.body.style.overflow
@@ -20,9 +21,23 @@ export default function AddColisModal({ onClose, onSave }) {
     const resultat = await onSave(code, emplacement)
     if (resultat.ok) {
       onClose()
+    } else if (resultat.erreur === 'duplicateCode') {
+      setErreur('')
+      setDoublonsDepartements(resultat.departements || [])
     } else {
+      setDoublonsDepartements([])
       setErreur(resultat.erreur)
     }
+  }
+
+  const handleAjouterQuandMeme = async () => {
+    const resultat = await onSave(code, emplacement, { force: true })
+    if (resultat.ok) {
+      onClose()
+      return
+    }
+    setDoublonsDepartements([])
+    setErreur(resultat.erreur || 'error')
   }
 
   return (
@@ -60,6 +75,7 @@ export default function AddColisModal({ onClose, onSave }) {
               onChange={(e) => {
                 setCode(e.target.value.replace(/\D/g, ''))
                 setErreur('')
+                setDoublonsDepartements([])
               }}
               autoFocus
               dir="ltr"
@@ -77,9 +93,34 @@ export default function AddColisModal({ onClose, onSave }) {
               onChange={(val) => {
                 setEmplacement(val)
                 setErreur('')
+                setDoublonsDepartements([])
               }}
             />
           </div>
+
+          {doublonsDepartements.length > 0 && (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3">
+              <p className="text-sm font-semibold text-amber-900">
+                {he.duplicateCodeWarning(code, doublonsDepartements)}
+              </p>
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDoublonsDepartements([])}
+                  className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-700 active:bg-slate-100"
+                >
+                  {he.cancel}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAjouterQuandMeme}
+                  className="flex-1 rounded-xl bg-slate-900 py-2.5 text-sm font-semibold text-white active:bg-slate-800"
+                >
+                  {he.addAnyway}
+                </button>
+              </div>
+            </div>
+          )}
 
           {erreur && (
             <p className="text-sm text-red-600" role="alert">

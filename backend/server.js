@@ -7,7 +7,7 @@ import { Departement, Zone, Colis } from './models.js'
 dotenv.config()
 
 const app = express()
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3001
 const PIN_GESTION = process.env.PIN_GESTION || '1234'
 
 // Middleware
@@ -175,3 +175,4 @@ app.delete('/api/colis/:id', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`)
 })
+

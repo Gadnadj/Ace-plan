@@ -57,7 +57,9 @@ function ColisCard({
             {showCategorie && (
               <p className='mt-1 text-sm text-slate-500'>
                 {he.category}:{' '}
-                <span className='font-semibold text-slate-700'>{departementNom}</span>
+                <span className='font-semibold text-slate-700'>
+                  {colis.categorieNom || departementNom}
+                </span>
               </p>
             )}
           </div>
