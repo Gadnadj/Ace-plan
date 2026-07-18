@@ -66,6 +66,32 @@ app.post('/api/departements', async (req, res) => {
     }
 })
 
+app.patch('/api/departements/:id', async (req, res) => {
+    try {
+        const nomNettoye = String(req.body.nom || '').trim()
+        if (!nomNettoye) {
+            return res.status(400).json({ ok: false, erreur: 'empty' })
+        }
+
+        const existe = await Departement.findOne({
+            nom: nomNettoye,
+            _id: { $ne: req.params.id }
+        })
+        if (existe) {
+            return res.status(400).json({ ok: false, erreur: 'exists' })
+        }
+
+        const dept = await Departement.findByIdAndUpdate(
+            req.params.id,
+            { nom: nomNettoye },
+            { new: true }
+        )
+        res.json({ ok: true, dept })
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message })
+    }
+})
+
 app.delete('/api/departements/:id', async (req, res) => {
     try {
         await Departement.updateOne({ _id: req.params.id }, { actif: false })

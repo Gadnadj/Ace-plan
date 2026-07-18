@@ -20,6 +20,7 @@ export const he = {
   departmentExists: 'המחלקה כבר קיימת',
   departmentEmpty: 'יש להזין שם',
   departmentSaveError: 'שגיאה בשמירת המחלקה',
+  renameDepartment: 'שינוי שם המחלקה',
 
   // הגדרות
   settings: 'הגדרות',

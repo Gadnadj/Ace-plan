@@ -7,8 +7,12 @@ import { he } from '../i18n/he';
 export default function SettingsModal({ onClose }) {
   const { isGestion } = useAuth();
   const { zones, ajouterZone, supprimerZone } = useZones();
-  const { departements, ajouterDepartement, supprimerDepartement } =
-    useDepartements();
+  const {
+    departements,
+    ajouterDepartement,
+    renommerDepartement,
+    supprimerDepartement,
+  } = useDepartements();
 
   const [nouvelleZone, setNouvelleZone] = useState('');
   const [erreurZone, setErreurZone] = useState('');
@@ -16,6 +20,9 @@ export default function SettingsModal({ onClose }) {
   const [nouveauDept, setNouveauDept] = useState('');
   const [erreurDept, setErreurDept] = useState('');
   const [suppressionEnAttente, setSuppressionEnAttente] = useState(null);
+
+  const [editionDept, setEditionDept] = useState(null);
+  const [erreurEdition, setErreurEdition] = useState('');
 
   useEffect(() => {
     const precedentOverflow = document.body.style.overflow;
@@ -54,6 +61,24 @@ export default function SettingsModal({ onClose }) {
       setErreurDept(he.departmentEmpty);
     } else {
       setErreurDept(he.departmentSaveError);
+    }
+  };
+
+  const handleRenommerDept = async () => {
+    if (!editionDept) return;
+    const resultat = await renommerDepartement(
+      editionDept.id,
+      editionDept.valeur,
+    );
+    if (resultat.ok) {
+      setEditionDept(null);
+      setErreurEdition('');
+    } else if (resultat.erreur === 'exists') {
+      setErreurEdition(he.departmentExists);
+    } else if (resultat.erreur === 'empty') {
+      setErreurEdition(he.departmentEmpty);
+    } else {
+      setErreurEdition(he.departmentSaveError);
     }
   };
 
@@ -99,31 +124,91 @@ export default function SettingsModal({ onClose }) {
                 {he.departmentsList}
               </h3>
               <ul className='mb-4 flex flex-col gap-2'>
-                {departements.map((d) => (
-                  <li
-                    key={d.id}
-                    className='flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3'
-                  >
-                    <span className='font-semibold text-slate-800'>
-                      {d.nom}
-                    </span>
-                    {departements.length > 1 && (
-                      <button
-                        type='button'
-                        onClick={() =>
-                          setSuppressionEnAttente({
-                            type: 'departement',
-                            id: d.id,
-                            label: d.nom,
-                          })
-                        }
-                        className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </li>
-                ))}
+                {departements.map((d) => {
+                  const enEdition = editionDept?.id === d.id;
+                  return (
+                    <li
+                      key={d.id}
+                      className='rounded-xl bg-slate-50 px-4 py-3'
+                    >
+                      {enEdition ? (
+                        <div className='flex flex-col gap-2'>
+                          <input
+                            type='text'
+                            autoFocus
+                            value={editionDept.valeur}
+                            onChange={(e) => {
+                              setEditionDept({
+                                id: d.id,
+                                valeur: e.target.value,
+                              });
+                              setErreurEdition('');
+                            }}
+                            className='w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-base font-semibold text-slate-800 outline-none focus:border-slate-500'
+                          />
+                          {erreurEdition && (
+                            <p className='text-sm text-red-600' role='alert'>
+                              {erreurEdition}
+                            </p>
+                          )}
+                          <div className='flex gap-2'>
+                            <button
+                              type='button'
+                              onClick={() => {
+                                setEditionDept(null);
+                                setErreurEdition('');
+                              }}
+                              className='flex-1 rounded-lg border border-slate-200 bg-white py-2 text-sm font-semibold text-slate-700 active:bg-slate-100'
+                            >
+                              {he.cancel}
+                            </button>
+                            <button
+                              type='button'
+                              disabled={!editionDept.valeur.trim()}
+                              onClick={handleRenommerDept}
+                              className='flex-1 rounded-lg bg-slate-900 py-2 text-sm font-semibold text-white active:bg-slate-800 disabled:opacity-40'
+                            >
+                              {he.save}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className='flex items-center justify-between gap-2'>
+                          <span className='min-w-0 flex-1 truncate font-semibold text-slate-800'>
+                            {d.nom}
+                          </span>
+                          <div className='flex shrink-0 items-center gap-2'>
+                            <button
+                              type='button'
+                              onClick={() => {
+                                setEditionDept({ id: d.id, valeur: d.nom });
+                                setErreurEdition('');
+                              }}
+                              className='rounded-lg bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 active:bg-slate-300'
+                            >
+                              {he.edit}
+                            </button>
+                            {departements.length > 1 && (
+                              <button
+                                type='button'
+                                onClick={() =>
+                                  setSuppressionEnAttente({
+                                    type: 'departement',
+                                    id: d.id,
+                                    label: d.nom,
+                                  })
+                                }
+                                className='rounded-lg bg-red-100 px-2 py-1 text-xs font-medium text-red-700'
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
               <form onSubmit={handleAjouterDept}>
                 <label

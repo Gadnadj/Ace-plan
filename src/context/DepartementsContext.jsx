@@ -114,6 +114,56 @@ export function DepartementsProvider({ children }) {
     [departements],
   );
 
+  const renommerDepartement = useCallback(
+    async (id, nom) => {
+      const nomNettoye = nom.trim();
+      if (!nomNettoye) return { ok: false, erreur: 'empty' };
+
+      const existeDeja = departements.some(
+        (d) => d.id !== id && d.nom === nomNettoye,
+      );
+      if (existeDeja) return { ok: false, erreur: 'exists' };
+
+      const appliquerLocal = () => {
+        const liste = departements.map((d) =>
+          d.id === id ? { ...d, nom: nomNettoye } : d,
+        );
+        setDepartements(liste);
+        localStorage.setItem(
+          CONFIG.DEPARTEMENTS_STORAGE_KEY,
+          JSON.stringify(liste),
+        );
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/api/departements/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom: nomNettoye }),
+        });
+
+        if (res.ok) {
+          setDepartements((prev) =>
+            prev.map((d) => (d.id === id ? { ...d, nom: nomNettoye } : d)),
+          );
+          return { ok: true };
+        }
+
+        const data = await res.json().catch(() => ({}));
+        if (data.erreur === 'exists') return { ok: false, erreur: 'exists' };
+
+        // Fallback local (API indisponible / test hors-ligne)
+        appliquerLocal();
+        return { ok: true, fallback: true };
+      } catch (err) {
+        console.error('Erreur renommage département:', err);
+        appliquerLocal();
+        return { ok: true, fallback: true };
+      }
+    },
+    [departements],
+  );
+
   const supprimerDepartement = useCallback(
     async (id) => {
       if (departements.length <= 1) return { ok: false, erreur: 'last' };
@@ -152,6 +202,7 @@ export function DepartementsProvider({ children }) {
         chargement,
         changerDepartement,
         ajouterDepartement,
+        renommerDepartement,
         supprimerDepartement,
       }}
     >
